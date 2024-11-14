@@ -1,0 +1,70 @@
+import sys
+import pygame
+import random
+
+WIDTH = 600
+HEIGHT = 400
+TITLE = "snake"
+
+pygame.init()
+
+
+WHITE = (255, 255, 255)
+RED = (255, 0, 0) 
+BLUE = (0, 0, 255)
+
+
+player_size = 50
+player_pos = [WIDTH // 2, HEIGHT - 2 * player_size]
+player_speed = 10  
+
+enemy_size = 20
+enemy_pos = [random.randint(0, WIDTH - enemy_size), random.randint(0, HEIGHT - enemy_size)]
+enemy_speet = 10 
+
+score = 0 
+clock = pygame.time.Clock() 
+
+def check_collision(player_pos, enemy_pos):
+    p_x, p_y = player_pos
+    e_x, e_y = enemy_pos
+    if (e_x < p_x < e_x + enemy_size or e_x < p_x + player_size < e_x + enemy_size) and \
+       (e_y < p_y < e_y + enemy_size or e_y < p_y + player_size < e_y + enemy_size):
+        return True
+    return False
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption(TITLE)
+
+
+game_over = False
+while not game_over:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                player_pos[0] -= player_speed
+            elif event.key == pygame.K_RIGHT:
+                player_pos[0] += player_speed
+            elif event.key == pygame.K_UP:
+                player_pos[1] -= player_speed
+            elif event.key == pygame.K_DOWN:
+                player_pos[1] += player_speed 
+
+    if check_collision(player_pos, enemy_pos):
+        score += 1  
+        enemy_pos = [random.randint(0, WIDTH - enemy_size), random.randint(0, HEIGHT - enemy_size)]  
+        print("Счет:", score)
+
+    
+    screen.fill(WHITE)
+    pygame.draw.rect(screen, RED, (player_pos[0], player_pos[1], player_size, player_size)) 
+    pygame.draw.rect(screen, BLUE, (enemy_pos[0], enemy_pos[1], enemy_size, enemy_size))
+     
+
+    pygame.display.flip() 
+    clock.tick(30)
